@@ -52,7 +52,7 @@
 						<configuration>
 							<artifacts>
 								<artifact>
-									<file>${project.build.directory}/openapi.yaml</file>
+									<file>${project.build.directory}/spec.yaml</file>
 									<type>yaml</type>
 								</artifact>
 							</artifacts>
@@ -72,7 +72,7 @@
 							<goal>validate</goal>
 						</goals>
 						<configuration>
-							<inputFile>${project.build.directory}/openapi.yaml</inputFile>
+							<inputFile>${project.build.directory}/spec.yaml</inputFile>
 						</configuration>
 					</execution>
 				</executions>

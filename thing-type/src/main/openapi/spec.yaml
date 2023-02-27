@@ -1,7 +1,15 @@
 openapi: 3.0.3
 info:
   title: INOA API - ThingType
-  description: API for defining thing types
+  description: |-
+    API for managing thing types.
+    # Authentication
+    This api is secured via [OpenID](https://auth.demo.inoa.io/realms/inoa/.well-known/openid-configuration).
+    # Model
+    A Thing type consists of the following properties:
+    * **name**: human friendly name to identify the thing type in UIs
+    * **reference**: technical identifier, e.g. for thing urns like `urn:s0:1`
+    * **schema**: JSON schema for configuration objects
   version: ${project.version}
   license:
     name: Apache License 2.0

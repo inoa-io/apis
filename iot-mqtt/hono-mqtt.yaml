@@ -1,0 +1,160 @@
+asyncapi: 2.6.0
+info:
+  title: Hono MQTT Service
+  version: ${project.version}
+  description: |
+    Hono MQTT.
+    see also https://www.eclipse.org/hono/docs/user-guide/mqtt-adapter/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  production:
+    url: mqtts://mqtt.iot.inoa.io
+    protocol: mqtt
+    description: Production MQTT broker
+
+channels:
+  t:
+    publish:
+      operationId: telemetry
+      message:
+        $ref: "#/components/messages/Telemetry"
+  e:
+    publish:
+      operationId: event
+      message:
+        $ref: "#/components/messages/Event"
+  c///q/#:
+    subscribe:
+      operationId: command
+      message:
+        $ref: "#/components/messages/Command"
+
+  c///s/${reqId}/${status}:
+    parameters:
+      reqId:
+        description: Id of the user.
+        schema:
+          type: string
+      status:
+        description: Id of the user.
+        schema:
+          type: string
+    subscribe:
+      operationId: commandResponse
+      message:
+        $ref: "#/components/messages/CommandResponse"
+
+components:
+  messages:
+    Telemetry:
+      name: telemetry
+      title: new telemetry data event
+      summary: Inform about new telemetry data
+      contentType: application/json
+      payload:
+        type: array
+        items:
+          $ref: "#/components/schemas/telemetryPayload"
+    Event:
+      name: event
+      title: new event
+      summary: Inform about a new event from the device
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/eventPayload"
+    Command:
+      name: command
+      title: command
+      summary: command message
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/commandPayload"
+    CommandResponse:
+      name: commandResponse
+      title: command response
+      summary: command response payload
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/commandResponsePayload"
+
+  schemas:
+    telemetryPayload:
+      type: object
+      properties:
+        urn:
+          type: string
+          description: urn of the device
+          example: urn:dvh4013:33043300:0x4000
+        value:
+          type: string
+          format: byte
+          description: measured value as base64 encodes bytes
+          example: AQMEABacUzLK
+        timestamp:
+          type: number
+          example: 1677097973829
+          description: timestamp
+
+    eventPayload:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of the event
+          example: 1677173014122
+        specversion:
+          type: string
+          description: event spec version
+          example: 1.0
+        type:
+          type: string
+          description: event type
+          example: io.inoa.log.emitted
+        source:
+          type: string
+          description: event source
+          example: ISRL01-E0E2E6BCC0EC
+        time:
+          type: string
+          description: timestamp
+          format: date-time
+          example: 2023-02-23T17:23:34Z
+        datacontenttype:
+          type: string
+          description: content type
+          example: application/json
+        data:
+          type: string
+          description: foo
+          example: "{\"tag\":\"|METERING|\",\"level\":2,\"time\":1677173014120,\"msg\":\"test: RS485 request timed out.\"}"
+
+    commandPayload:
+      type: object
+      properties:
+        id:
+          type: string
+          description: command id
+          example: 1
+        method:
+          type: string
+          description: event source
+          example: rpc.list
+        params:
+          type: object
+          description: parameters
+          example: {}
+
+    commandResponsePayload:
+      type: object
+      properties:
+        id:
+          type: string
+          description: command id
+          example: 1
+        result:
+          type: object
+          description: result object
+          example: []

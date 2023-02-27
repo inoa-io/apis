@@ -24,6 +24,8 @@
 
 	<modules>
 		<module>thing-type</module>
+		<module>hono-kafka</module>
+		<module>iot-mqtt</module>
 	</modules>
 
 	<scm>

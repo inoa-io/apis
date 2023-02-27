@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags-ignore: "**"
   pull_request: {}
 
 jobs:
@@ -33,4 +34,11 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: maven
+          server-id: github.com
+      - run: mvn -B -ntp dependency:go-offline
       - run: mvn -B -ntp verify
+        if: ${{ github.ref != 'refs/heads/main' }}
+      - run: mvn -B -ntp deploy
+        if: ${{ github.ref == 'refs/heads/main' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_ACTION_TOKEN }}

@@ -22,6 +22,10 @@
 		</license>
 	</licenses>
 
+	<modules>
+		<module>thing-type</module>
+	</modules>
+
 	<scm>
 		<url>https://github.com/inoa-io/inoa-api</url>
 		<connection>scm:git:https://github.com/inoa-io/inoa-api.git</connection>
@@ -66,7 +70,9 @@
 		<version.org.apache.maven.plugins.jar>3.3.0</version.org.apache.maven.plugins.jar>
 		<version.org.apache.maven.plugins.resources>3.3.0</version.org.apache.maven.plugins.resources>
 		<version.org.apache.maven.plugins.surefire>3.0.0-M9</version.org.apache.maven.plugins.surefire>
+		<version.org.codehaus.mojo.build-helper>3.3.0</version.org.codehaus.mojo.build-helper>
 		<version.org.codehaus.mojo.tidy>1.2.0</version.org.codehaus.mojo.tidy>
+		<version.org.openapitools.stylevalidator>1.7</version.org.openapitools.stylevalidator>
 
 	</properties>
 
@@ -118,8 +124,26 @@
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>${version.org.codehaus.mojo.build-helper}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>tidy-maven-plugin</artifactId>
 					<version>${version.org.codehaus.mojo.tidy}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.openapitools.openapistylevalidator</groupId>
+					<artifactId>openapi-style-validator-maven-plugin</artifactId>
+					<version>${version.org.openapitools.stylevalidator}</version>
+					<configuration>
+						<!-- see https://opensource.zalando.com/restful-api-guidelines -->
+						<ignoreHeaderXNaming>false</ignoreHeaderXNaming>
+						<headerNamingConvention>AnyCase</headerNamingConvention>
+						<pathNamingConvention>HyphenCase</pathNamingConvention>
+						<parameterNamingConvention>UnderscoreCase</parameterNamingConvention>
+						<propertyNamingConvention>UnderscoreCase</propertyNamingConvention>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -131,6 +155,7 @@
 				<artifactId>tidy-maven-plugin</artifactId>
 				<executions>
 					<execution>
+						<phase>verify</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>

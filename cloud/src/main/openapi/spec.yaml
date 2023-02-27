@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
-  title: INOA API - ThingType
+  title: INOA Cloud API
   description: |-
-    API for managing thing types.
     # Authentication
     This api is secured via [OpenID](https://auth.demo.inoa.io/realms/inoa/.well-known/openid-configuration).
     # Model

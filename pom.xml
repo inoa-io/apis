@@ -23,7 +23,7 @@
 	</licenses>
 
 	<modules>
-		<module>thing-type</module>
+		<module>cloud</module>
 		<module>hono-kafka</module>
 		<module>iot-mqtt</module>
 	</modules>

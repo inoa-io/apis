@@ -1,0 +1,29 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: inoa-things
+  title: INOA Things API
+  annotations:
+    github.com/project-slug: inoa-io/inoa-api
+spec:
+  owner: default/grayc
+  system: inoa-cloud
+  lifecycle: production
+  type: openapi
+  definition:
+    $text: https://github.com/inoa-io/inoa-api/blob/main/cloud/src/main/openapi/spec.yaml
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: inoa-thing-types
+  title: INOA ThingTypes API
+  annotations:
+    github.com/project-slug: inoa-io/inoa-api
+spec:
+  owner: default/grayc
+  system: inoa-cloud
+  lifecycle: production
+  type: openapi
+  definition:
+    $text: https://github.com/inoa-io/inoa-api/blob/main/cloud/src/main/openapi/spec.yaml

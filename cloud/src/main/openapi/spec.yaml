@@ -135,6 +135,163 @@ paths:
           description: Thing-type not found.
         409:
           description: Name/Reference already assigned.
+  /things:
+    get:
+      summary: List things
+      description: List things with filtering and pagination.
+      operationId: findThings
+      tags: [things]
+      parameters:
+        - $ref: '#/components/parameters/PageablePage'
+        - $ref: '#/components/parameters/PageableSize'
+        - name: sort
+          description: Sorting parameter. Default sort is `name,desc`.
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: (name|reference|created|updated)(,(asc|desc))?
+            default: ["name,desc"]
+          example: ["reference,asc"]
+        - name: filter
+          description: Search in name and reference. Supports wildcard *, is case insensitive.
+          in: query
+          schema:
+            type: string
+            maxLength: 10
+            example: s0
+      responses:
+        200:
+          description: Paginated reults.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThingPage'
+        401:
+          description: Unauthorized.
+    post:
+      summary: Create thing
+      description: Create thing.
+      operationId: createThing
+      tags: [things]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThingCreate'
+      responses:
+        201:
+          description: Created thing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThingType'
+        400:
+          description: Malformed or reference/configuration is invalid.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        409:
+          description: Name already assigned.
+  /things/{thing_id}:
+    parameters:
+      - $ref: '#/components/parameters/ThingId'
+    get:
+      summary: Find thing
+      description: Find thing by id.
+      operationId: findThing
+      tags: [things]
+      responses:
+        200:
+          description: Thing found for given id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+        400:
+          description: Malformed id.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Thing not found.
+    patch:
+      summary: Update thing
+      description: Update thing.
+      operationId: updateThing
+      tags: [things]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThingUpdate'
+      responses:
+        200:
+          description: Updated thing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+        400:
+          description: Malformed or configuration is invalid.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Thing not found.
+        409:
+          description: Name already assigned.
+    delete:
+      summary: Delete thing
+      description: Delete given thing.
+      operationId: deleteThing
+      tags: [things]
+      responses:
+        204:
+          description: Thing deleted.
+        400:
+          description: Malformed id.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Thing not found.
+  /things/{thing_id}/configuration:
+    parameters:
+      - $ref: '#/components/parameters/ThingId'
+    put:
+      summary: Update thing configuration
+      description: Update thing configuration.
+      operationId: updateThingConfiguration
+      tags: [things]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThingConfiguration'
+      responses:
+        200:
+          description: Updated thing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thing'
+        400:
+          description: Malformed or configuration is invalid.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Thing not found.
 components:
   securitySchemes:
     Bearer:
@@ -144,6 +301,13 @@ components:
       type: openIdConnect
       openIdConnectUrl: https://auth.demo.inoa.io/realms/inoa/.well-known/openid-configuration
   schemas:
+    GatewayId:
+      description: Id as technical reference (never changes).
+      type: string
+      minLength: 4
+      maxLength: 20
+      pattern: ^[A-Z][A-Z0-9\-_]{3,19}$
+      example: GW-00001
     Timestamp:
       description: Common timestamp for created/updated timestamps.
       type: string
@@ -270,6 +434,110 @@ components:
           $ref: '#/components/schemas/ThingTypeEnabled'
         schema:
           $ref: '#/components/schemas/ThingTypeSchema'
+    ThingId:
+      description: Id as technical reference (never changes).
+      type: string
+      format: uuid
+      example: 00000000-0000-0000-0001-000000000000
+    ThingName:
+      description: Human readable name for a thing.
+      type: string
+      maxLength: 20
+      example: S0-Counter am Wasserhahn
+    ThingConfiguration:
+      description: Configuration for a thing. Must match `schema` from related thing-type.
+      type: object
+    ThingPage:
+      description: Page of things.
+      type: object
+      properties:
+        content:
+          description: List of entries on page.
+          type: array
+          items:
+            $ref: '#/components/schemas/ThingPageEntry'
+        total_size:
+          description: Total available entries.
+          type: integer
+          format: int32
+          example: 0
+      required:
+        - content
+        - total_size
+    ThingPageEntry:
+      description: Represents a thing with some properties for list operations.
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ThingId'
+        name:
+          $ref: '#/components/schemas/ThingName'
+        reference:
+          $ref: '#/components/schemas/ThingTypeReference'
+        gateway_id:
+          $ref: '#/components/schemas/GatewayId'
+        created:
+          $ref: '#/components/schemas/Timestamp'
+        updated:
+          $ref: '#/components/schemas/Timestamp'
+      required:
+        - id
+        - name
+        - reference
+        - gateway_id
+        - created
+        - updated
+    Thing:
+      description: Represents a thing-type with all properties.
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ThingId'
+        name:
+          $ref: '#/components/schemas/ThingName'
+        reference:
+          $ref: '#/components/schemas/ThingTypeReference'
+        configuration:
+          $ref: '#/components/schemas/ThingConfiguration'
+        gateway_id:
+          $ref: '#/components/schemas/GatewayId'
+        created:
+          $ref: '#/components/schemas/Timestamp'
+        updated:
+          $ref: '#/components/schemas/Timestamp'
+      required:
+        - id
+        - name
+        - reference
+        - configuration
+        - gateway_id
+        - created
+        - updated
+    ThingCreate:
+      description: Create thing from given propetries.
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/ThingName'
+        reference:
+          $ref: '#/components/schemas/ThingTypeReference'
+        configuration:
+          $ref: '#/components/schemas/ThingConfiguration'
+        gateway_id:
+          $ref: '#/components/schemas/GatewayId'
+      required:
+        - name
+        - reference
+        - configuration
+        - gateway_id
+    ThingUpdate:
+      description: Update thing from given propetries.
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/ThingName'
+        configuration:
+          $ref: '#/components/schemas/ThingConfiguration'
   parameters:
     PageablePage:
       name: page
@@ -295,3 +563,9 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/ThingTypeId'
+    ThingId:
+      name: thing_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ThingId'

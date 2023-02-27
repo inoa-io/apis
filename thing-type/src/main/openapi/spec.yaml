@@ -1,0 +1,284 @@
+openapi: 3.0.3
+info:
+  title: INOA API - ThingType
+  description: API for defining thing types
+  version: ${project.version}
+  license:
+    name: Apache License 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    name: inoa.io
+    url: https://github.com/inoa-io
+servers:
+  - url: https://api.demo.inoa.io
+    description: INOA Demo instance
+security:
+  - Bearer: []
+  - OpenId: []
+paths:
+  /thing-types:
+    get:
+      summary: List thing-types
+      description: List thing-types with filtering and pagination.
+      operationId: findThingTypes
+      tags: [thing-types]
+      parameters:
+        - $ref: '#/components/parameters/PageablePage'
+        - $ref: '#/components/parameters/PageableSize'
+        - name: sort
+          description: Sorting parameter. Default sort is `name,desc`.
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: (name|reference|created|updated)(,(asc|desc))?
+            default: ["name,desc"]
+          example: ["reference,asc"]
+        - name: filter
+          description: Search in name and reference. Supports wildcard *, is case insensitive.
+          in: query
+          schema:
+            type: string
+            maxLength: 10
+            example: s0
+      responses:
+        200:
+          description: Paginated reults.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThingTypePage'
+        401:
+          description: Unauthorized.
+    post:
+      summary: Create thing type
+      description: Create thing type.
+      operationId: createThingType
+      tags: [thing-types]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThingTypeCreate'
+      responses:
+        201:
+          description: Created thing-type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThingType'
+        400:
+          description: Malformed.
+        401:
+          description: Unauthorized.
+        409:
+          description: Name/Reference already assigned.
+  /thing-types/{thing_type_id}:
+    parameters:
+      - $ref: '#/components/parameters/ThingTypeId'
+    get:
+      summary: Find thing-type
+      description: Find thing-type by id.
+      operationId: findThingType
+      tags: [thing-types]
+      responses:
+        200:
+          description: Thing-type found for given id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThingType'
+        400:
+          description: Malformed id.
+        401:
+          description: Unauthorized.
+        404:
+          description: Thing-type not found.
+    patch:
+      summary: Update thing type
+      description: Update thing type.
+      operationId: updateThingType
+      tags: [thing-types]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThingTypeUpdate'
+      responses:
+        200:
+          description: Updated thing-type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThingType'
+        400:
+          description: Malformed.
+        401:
+          description: Unauthorized.
+        404:
+          description: Thing-type not found.
+        409:
+          description: Name/Reference already assigned.
+    delete:
+      summary: Delete thing-type
+      description: TODO
+      operationId: deleteThingType
+      tags: [thing-types]
+      responses:
+        204:
+          description: Thing-type deleted.
+        400:
+          description: Malformed id.
+        401:
+          description: Unauthorized.
+        404:
+          description: Thing-type not found.
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+    OpenId:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.demo.inoa.io/realms/inoa/.well-known/openid-configuration
+  schemas:
+    Timestamp:
+      description: Common timestamp for created/updated timestamps.
+      type: string
+      format: date-time
+      example: 2021-01-01T00:00:00
+    ThingTypeId:
+      description: Id as technical reference (never changes).
+      type: string
+      format: uuid
+      example: 00000000-0000-0000-0000-000000000000
+    ThingTypeName:
+      description: Human readable name for a thing type
+      type: string
+      maxLength: 20
+      example: S0-Counter
+    ThingTypeReference:
+      description: Reference for thing type. Uses as prefix for urn.
+      type: string
+      maxLength: 20
+      pattern: ^[a-z0-9\-]$
+      example: s0
+    ThingTypeSchema:
+      description: JSON schema that defines this thing-type.
+      externalDocs:
+        url: https://json-schema.org/
+        description: JSON Schema
+      type: object
+      format: json-schema
+    ThingTypePage:
+      description: Page of thing-types.
+      type: object
+      properties:
+        content:
+          description: List of entries on page.
+          type: array
+          items:
+            $ref: '#/components/schemas/ThingTypePageEntry'
+        total_size:
+          description: Total available entries.
+          type: integer
+          format: int32
+          example: 0
+      required:
+        - content
+        - total_size
+    ThingTypePageEntry:
+      description: Represents a thing-type with some properties for list operations.
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ThingTypeId'
+        name:
+          $ref: '#/components/schemas/ThingTypeName'
+        reference:
+          $ref: '#/components/schemas/ThingTypeReference'
+        created:
+          $ref: '#/components/schemas/Timestamp'
+        updated:
+          $ref: '#/components/schemas/Timestamp'
+      required:
+        - id
+        - name
+        - reference
+        - created
+        - updated
+    ThingType:
+      description: Represents a thing-type with all properties.
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ThingTypeId'
+        name:
+          $ref: '#/components/schemas/ThingTypeName'
+        reference:
+          $ref: '#/components/schemas/ThingTypeReference'
+        schema:
+          $ref: '#/components/schemas/ThingTypeSchema'
+        created:
+          $ref: '#/components/schemas/Timestamp'
+        updated:
+          $ref: '#/components/schemas/Timestamp'
+      required:
+        - id
+        - name
+        - reference
+        - schema
+        - created
+        - updated
+    ThingTypeCreate:
+      description: Create thing-type from given propetries.
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/ThingTypeName'
+        reference:
+          $ref: '#/components/schemas/ThingTypeReference'
+        schema:
+          $ref: '#/components/schemas/ThingTypeSchema'
+      required:
+        - name
+        - reference
+        - schema
+    ThingTypeUpdate:
+      description: Update thing-type from given propetries.
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/ThingTypeName'
+        reference:
+          $ref: '#/components/schemas/ThingTypeReference'
+        schema:
+          $ref: '#/components/schemas/ThingTypeSchema'
+  parameters:
+    PageablePage:
+      name: page
+      description: Page number for pagination.
+      in: query
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+      example: 0
+    PageableSize:
+      name: size
+      description: Page size for pagination. Server can ignore large page sizes.
+      in: query
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+      example: 50
+    ThingTypeId:
+      name: thing_type_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ThingTypeId'

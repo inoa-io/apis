@@ -81,6 +81,8 @@ paths:
           description: Malformed.
         401:
           description: Unauthorized.
+        403:
+          description: Forbidden.
         409:
           description: Name/Reference already assigned.
   /thing-types/{thing_type_id}:
@@ -102,11 +104,13 @@ paths:
           description: Malformed id.
         401:
           description: Unauthorized.
+        403:
+          description: Forbidden.
         404:
           description: Thing-type not found.
     patch:
-      summary: Update thing type
-      description: Update thing type.
+      summary: Update thing-type
+      description: Update thing-type.
       operationId: updateThingType
       tags: [thing-types]
       requestBody:
@@ -126,13 +130,17 @@ paths:
           description: Malformed.
         401:
           description: Unauthorized.
+        403:
+          description: Forbidden.
         404:
           description: Thing-type not found.
         409:
           description: Name/Reference already assigned.
     delete:
+      # TODO sollte das hier löschbar sein?
+      deprecated: true
       summary: Delete thing-type
-      description: TODO
+      description: Delete given thing type.
       operationId: deleteThingType
       tags: [thing-types]
       responses:
@@ -142,6 +150,8 @@ paths:
           description: Malformed id.
         401:
           description: Unauthorized.
+        403:
+          description: Forbidden.
         404:
           description: Thing-type not found.
 components:
@@ -261,6 +271,7 @@ components:
       properties:
         name:
           $ref: '#/components/schemas/ThingTypeName'
+        # TODO sollte das hier updatebar sein?
         reference:
           $ref: '#/components/schemas/ThingTypeReference'
         schema:

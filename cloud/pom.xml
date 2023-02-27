@@ -8,10 +8,10 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>api-thing-type</artifactId>
+	<artifactId>api-cloud</artifactId>
 	<packaging>pom</packaging>
 
-	<name>INOA API :: ThingType</name>
+	<name>INOA API :: Cloud</name>
 
 	<build>
 		<plugins>

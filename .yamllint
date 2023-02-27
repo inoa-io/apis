@@ -14,7 +14,7 @@ rules:
     quote-type: double
     required: only-when-needed
     ignore: |
-      thing-type/src/main/openapi/spec.yaml
+      cloud/src/main/openapi/spec.yaml
 
   # allow everything on keys
   truthy:

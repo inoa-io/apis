@@ -84,12 +84,12 @@ paths:
           description: Forbidden.
         409:
           description: Name/Reference already assigned.
-  /thing-types/{thing_type_id}:
+  /thing-types/{reference}:
     parameters:
-      - $ref: '#/components/parameters/ThingTypeId'
+      - $ref: '#/components/parameters/ThingTypeReference'
     get:
       summary: Find thing-type
-      description: Find thing-type by id.
+      description: Find thing-type by reference.
       operationId: findThingType
       tags: [thing-types]
       responses:
@@ -99,8 +99,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThingType'
-        400:
-          description: Malformed id.
         401:
           description: Unauthorized.
         403:
@@ -313,11 +311,6 @@ components:
       type: string
       format: date-time
       example: 2021-01-01T00:00:00
-    ThingTypeId:
-      description: Id as technical reference (never changes).
-      type: string
-      format: uuid
-      example: 00000000-0000-0000-0000-000000000000
     ThingTypeName:
       description: Human readable name for a thing type
       type: string
@@ -329,7 +322,7 @@ components:
       default: true
       example: false
     ThingTypeReference:
-      description: Reference for thing type. Uses as prefix for urn.
+      description: Reference for thing type. Uses as prefix for urn and business key.
       type: string
       maxLength: 20
       pattern: ^[a-z0-9\-]$
@@ -362,8 +355,6 @@ components:
       description: Represents a thing-type with some properties for list operations.
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/ThingTypeId'
         name:
           $ref: '#/components/schemas/ThingTypeName'
         enabled:
@@ -375,7 +366,6 @@ components:
         updated:
           $ref: '#/components/schemas/Timestamp'
       required:
-        - id
         - name
         - enabled
         - reference
@@ -385,8 +375,6 @@ components:
       description: Represents a thing-type with all properties.
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/ThingTypeId'
         name:
           $ref: '#/components/schemas/ThingTypeName'
         enabled:
@@ -400,7 +388,6 @@ components:
         updated:
           $ref: '#/components/schemas/Timestamp'
       required:
-        - id
         - name
         - enabled
         - reference
@@ -557,12 +544,12 @@ components:
         format: int32
         minimum: 1
       example: 50
-    ThingTypeId:
-      name: thing_type_id
+    ThingTypeReference:
+      name: reference
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/ThingTypeId'
+        $ref: '#/components/schemas/ThingTypeReference'
     ThingId:
       name: thing_id
       in: path

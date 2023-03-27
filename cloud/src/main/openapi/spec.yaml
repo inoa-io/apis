@@ -133,6 +133,22 @@ paths:
           description: Thing-type not found.
         409:
           description: Name/Reference already assigned.
+    delete:
+      summary: Delete thing-type
+      description: Deletes thing-types without a thing.
+      operationId: deleteThingType
+      tags: [thing-types]
+      responses:
+        204:
+          description: Deleted thing-type.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Thing-type not found.
+        422:
+          description: Unable to delete thing-type because thing exists.
   /things:
     get:
       summary: List things
@@ -154,6 +170,11 @@ paths:
           example: ["reference,asc"]
         - name: filter
           description: Search in name and reference. Supports wildcard *, is case insensitive.
+          in: query
+          schema:
+            $ref: '#/components/schemas/ThingTypeReference'
+        - name: reference
+          description: Return all things for given reference.
           in: query
           schema:
             type: string
@@ -455,7 +476,7 @@ components:
       description: Represents a thing with some properties for list operations.
       type: object
       properties:
-        id:
+        thing_id:
           $ref: '#/components/schemas/ThingId'
         name:
           $ref: '#/components/schemas/ThingName'
@@ -468,7 +489,7 @@ components:
         updated:
           $ref: '#/components/schemas/Timestamp'
       required:
-        - id
+        - thing_id
         - name
         - reference
         - gateway_id
@@ -478,7 +499,7 @@ components:
       description: Represents a thing-type with all properties.
       type: object
       properties:
-        id:
+        thing_id:
           $ref: '#/components/schemas/ThingId'
         name:
           $ref: '#/components/schemas/ThingName'
@@ -493,7 +514,7 @@ components:
         updated:
           $ref: '#/components/schemas/Timestamp'
       required:
-        - id
+        - thing_id
         - name
         - reference
         - configuration

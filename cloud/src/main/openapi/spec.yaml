@@ -56,8 +56,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThingTypePage'
+        400:
+          description: Illegal sort, allowed only name,reference,created,updated.
         401:
           description: Unauthorized.
+        403:
+          description: Forbidden.
     post:
       summary: Create thing type
       description: Create thing type.
@@ -187,8 +191,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThingPage'
+        400:
+          description: Illegal sort, allowed only name,reference,created,updated.
         401:
           description: Unauthorized.
+        403:
+          description: Forbidden.
     post:
       summary: Create thing
       description: Create thing.
@@ -320,6 +328,11 @@ components:
       type: openIdConnect
       openIdConnectUrl: https://auth.demo.inoa.io/realms/inoa/.well-known/openid-configuration
   schemas:
+    Timestamp:
+      description: Common timestamp for created/updated timestamps.
+      type: string
+      format: date-time
+      example: 2021-01-01T00:00:00
     GatewayId:
       description: Id as technical reference (never changes).
       type: string
@@ -327,11 +340,6 @@ components:
       maxLength: 20
       pattern: ^[A-Z][A-Z0-9\-_]{3,19}$
       example: GW-00001
-    Timestamp:
-      description: Common timestamp for created/updated timestamps.
-      type: string
-      format: date-time
-      example: 2021-01-01T00:00:00
     ThingTypeName:
       description: Human readable name for a thing type
       type: string
@@ -368,6 +376,7 @@ components:
           description: Total available entries.
           type: integer
           format: int32
+          minimum: 0
           example: 0
       required:
         - content
@@ -416,7 +425,7 @@ components:
         - created
         - updated
     ThingTypeCreate:
-      description: Create thing-type from given propetries.
+      description: Create thing-type from given properties.
       type: object
       properties:
         name:
@@ -433,7 +442,7 @@ components:
         - reference
         - schema
     ThingTypeUpdate:
-      description: Update thing-type from given propetries.
+      description: Update thing-type from given properties.
       type: object
       properties:
         name:
@@ -468,6 +477,7 @@ components:
           description: Total available entries.
           type: integer
           format: int32
+          minimum: 0
           example: 0
       required:
         - content
@@ -522,7 +532,7 @@ components:
         - created
         - updated
     ThingCreate:
-      description: Create thing from given propetries.
+      description: Create thing from given properties.
       type: object
       properties:
         name:
@@ -539,7 +549,7 @@ components:
         - configuration
         - gateway_id
     ThingUpdate:
-      description: Update thing from given propetries.
+      description: Update thing from given properties.
       type: object
       properties:
         name:
